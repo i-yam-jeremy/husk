@@ -1,33 +1,18 @@
 	BITS 16
-start:
-	mov ax, 07C0h
-	add ax, 288
-	mov ss, ax
-	mov sp, 4096
+[ORG 0x7C00]
 
-	mov ax, 07C0h
-	mov ds, ax
+;set video mode
+mov ah, 00h
+mov al, 13h
 
-	mov si, text_string
-	call print_string
+int 10h
 
-	jmp $
+;write pixels on screen
+mov ah, 0ch
+mov bh, 0
+mov dx, 5
+mov cx, 5
+mov al, 0100b
 
-	text_string db 'Welcome to Husk', 0
+int 10h
 
-print_string:
-	mov ah, 0Eh
-
-.repeat:
-	lodsb
-	cmp al, 0
-	je .done
-	int 10h
-	jmp .repeat
-
-.done:
-	ret
-
-
-	times 510-($-$$) db 0
-	dw 0xAA55
