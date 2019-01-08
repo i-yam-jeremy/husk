@@ -1,2 +1,5 @@
-bin/*
+*.dmg
+*.iso
+*.bin
+*.DS_Store
 *.swp
