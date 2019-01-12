@@ -1057,7 +1057,7 @@ os_print_digit:
 	add ax, 'A'-'9'-1		; Correct for the skipped punctuation
 
 .digit_format:
-	add ax, '0'			; 0 will display as '0', etc.	
+	add ax, '0'			; 0 will display as '0', etc.
 
 	mov ah, 0Eh			; May modify other registers
 	int 10h
@@ -1213,4 +1213,3 @@ os_input_string:
 
 
 ; ==================================================================
-

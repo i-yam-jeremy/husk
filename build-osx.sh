@@ -24,7 +24,7 @@ echo "[okay] Assembled kernel"
 #cd ..
 cp disk_images/mikeos.flp disk_images/mikeos.dmg
 echo "[okay] Copied floppy image"
-dd conv=notrunc if=disk_images/mikeos.flp of=disk_images/mikeos.dmg || exit
+dd conv=notrunc if=src/bootload/bootload.bin of=disk_images/mikeos.dmg || exit
 echo "[okay] Added bootloader to image"
 rm -rf tmp-loop
 dev=`hdid -nobrowse -nomount disk_images/mikeos.dmg`
@@ -39,3 +39,5 @@ rm -f disk_images/mikeos.iso
 mkisofs -quiet -V 'MIKEOS' -input-charset iso8859-1 -o disk_images/mikeos.iso -b mikeos.dmg disk_images/ || exit
 echo "[okay] Converted floppy to ISO-8859-1 image"
 echo "[done] Build completed"
+
+qemu-system-i386 -drive format=raw,media=cdrom,readonly,file=disk_images/mikeos.iso
