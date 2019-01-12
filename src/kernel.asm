@@ -176,9 +176,30 @@ no_autorun_bin:
 	; a menu-driven program selector, or a command-line interface
 
 option_screen:
+	mov ax,0x13
+	int 0x10
+
+	;set video mode
+	mov ah, 00h
+	mov al, 13h
+
+	int 10h
+
+	;write pixels on screen
+	mov ah, 0ch
+	mov bh, 0
+	mov dx, 5
+	mov cx, 5
+	mov al, 0100b
+
+	int 10h
+
+	jmp $
+
+
 	mov ax, os_init_msg		; Set up the welcome screen
 	mov bx, os_version_msg
-	mov cx, 00001111b		; Colour: white text on light blue
+	mov cx, 10011111b		; Colour: white text on light blue
 	call os_draw_background
 
 	mov ax, dialog_string_1		; Ask if user wants app selector or command-line
