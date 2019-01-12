@@ -185,14 +185,26 @@ option_screen:
 
 	int 10h
 
+	mov dx, 0
+	mov cx, 0
+
+screen_loop_y:
+	mov dx, 0
+screen_loop_x:
+
 	;write pixels on screen
 	mov ah, 0ch
 	mov bh, 0
-	mov dx, 5
-	mov cx, 5
-	mov al, 0100b
-
+	mov al, 0100b ; THIS IS A DOS color code (0-F is basic palette, and 0x10-0xFF is more colors)
 	int 10h
+
+	inc dx
+	cmp dx, 200
+	jne screen_loop_x
+
+	inc cx
+	cmp cx, 320
+	jne screen_loop_y
 
 	jmp $
 
