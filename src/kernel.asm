@@ -54,41 +54,26 @@ os_main:
 	mov fs, ax			; live entirely in 64K
 	mov gs, ax
 
-option_screen:
 
-start:
+init_render:
     mov ax,13h
     int 10h
+render:
   ; draw palette in 32x8 squares, each square 5x5 pixels big (so 160x40px)
     push 0a000h
     pop es
     xor di,di
-    xor ax,ax  ; color
-    mov cx,8   ; big rows (each having 32 5x5 squares)
-bigRowLoop:
-    mov bx,5 ; pixel height of single row
-rowLoop:
-    mov dx,32 ; squares per row
-    push ax
-    push di
-squareLoop:
-    ; draw 5 pixels with "ah:al" color, ++color, di += 5
-    mov [es:di],ax
-    mov [es:di+2],ax
-    mov [es:di+4],al
-    add ax,0101h
-    add di,5
+    mov bx, 200 ; screen height
+screen_loop_y:
+    mov dx, 320 ; screen width
+screen_loop_x:
+    mov word [es:di], 0x3F
+    add di, 1
     dec dx
-    jnz squareLoop
-    pop di
-    pop ax     ; restore color for first square
-    add di,320 ; move di to start of next line
+    jnz screen_loop_x
     dec bx     ; do next single pixel line
-    jnz rowLoop
-    ; one row of color squares is drawn, now next 32 colors
-    add ax,02020h ; color += 32
-    dec cx
-    jnz bigRowLoop
+    jnz screen_loop_y
+
   ; wait for any key and exit
     xor ah,ah
     int 16h
