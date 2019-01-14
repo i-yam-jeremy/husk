@@ -333,7 +333,7 @@ l2hts:			; Calculate head, track and sector settings for int 13h
 ; ------------------------------------------------------------------
 ; STRINGS AND VARIABLES
 
-	kern_filename	db "KERNEL  BIN"	; MikeOS kernel filename
+	kern_filename	db "KERNEL  BIN"	; Husk kernel filename
 
 	disk_error	db "Floppy error! Press any key...", 0
 	file_not_found	db "KERNEL.BIN not found!", 0
