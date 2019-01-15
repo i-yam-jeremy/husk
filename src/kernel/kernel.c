@@ -13,13 +13,17 @@ void main() {
     0x0F, 0x0F, 0x0F, 0x0F,
   };
 
-  render_image(screen, image, 4, 4, 25, 25);
+  render_image(screen, image, 4, 4, -2, -2);
 }
 
 void render_image(unsigned char *screen, unsigned char *image, int width, int height, int x, int y) {
-  for (int iy = 0; iy < height; iy++) {
-    for (int ix = 0; ix < width; ix++) {
-      screen[(y+iy)*WIDTH + (x+ix)] = image[iy*width + ix];
+  for (int iy = 0; iy < height; iy++) { // iy = iterator y
+    for (int ix = 0; ix < width; ix++) { // ix = iterator x
+      int sx = x+ix; // sx = screen x
+      int sy = y+iy; // sy = screen y
+      if (0 <= sx && sx < WIDTH && 0 <= sy && sy < HEIGHT) {
+        screen[sy*WIDTH + sx] = image[iy*width + ix];
+      }
     }
   }
 }
