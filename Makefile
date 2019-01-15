@@ -11,7 +11,7 @@ run: $(TARGET)
 	qemu-system-i386 $(TARGET)
 
 src/kernel/kernel.bin: src/kernel/kernel.c
-	$(CC) -ffreestanding -c src/kernel/kernel.c -o src/kernel/kernel.o
+	$(CC) -ffreestanding -m32 -c src/kernel/kernel.c -o src/kernel/kernel.o
 	$(OBJCOPY) -O binary --change-start 0x1000 src/kernel/kernel.o src/kernel/kernel.bin
 
 src/bootloader/bootloader.bin: src/bootloader/bootloader.asm
