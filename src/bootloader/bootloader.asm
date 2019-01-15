@@ -6,6 +6,7 @@ KERNEL_OFFSET  equ 0x1000   ; This is the  memory  offset  to which  we will  lo
   ; best to  remember  this  for  later.
   mov bp, 0x9000         ; Set -up the  stack.
   mov sp, bp
+  call switch_to_bios_vga
   call  load_kernel       ; Load  our  kernel
   call  switch_to_pm      ; Switch  to  protected  mode , from  which
   ; we will  not  return
@@ -19,6 +20,12 @@ KERNEL_OFFSET  equ 0x1000   ; This is the  memory  offset  to which  we will  lo
 %include "src/bootloader/switch_to_pm.asm"
 
 [bits  16]
+; switch to BIOS VGA video mode
+switch_to_bios_vga:
+  mov ax, 0x13
+  int 0x10
+  ret
+
 ; load_kernel
 load_kernel:
   ;mov bx, MSG_LOAD_KERNEL    ; Print a message  to say we are  loading  the  kernel
