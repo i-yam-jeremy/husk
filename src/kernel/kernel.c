@@ -1,18 +1,28 @@
 #define WIDTH 320
 #define HEIGHT 200
 
-void set_pixel(unsigned char *screen, int x, int y, unsigned char color);
+unsigned char render_pixel(int x, int y);
 
 void main() {
   unsigned char *screen = (unsigned char *) 0xA0000;
 
   for (int y = 0; y < HEIGHT; y++) {
     for (int x = 0; x < WIDTH; x++) {
-      screen[y*WIDTH + x] = 0x0F;
+      screen[y*WIDTH + x] = render_pixel(x, y);
     }
   }
 }
 
-void set_pixel(unsigned char *screen, int x, int y, unsigned char color) {
-  screen[y*WIDTH + x] = color;
+unsigned char render_pixel(int x, int y) {
+  int u = x - WIDTH/2;
+  int v = y - HEIGHT/2;
+
+  int radius = 20;
+
+  if (u*u + v*v < radius*radius) {
+    return 0x0F;
+  }
+  else {
+    return 0x00;
+  }
 }
