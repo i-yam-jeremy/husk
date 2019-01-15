@@ -1,28 +1,25 @@
 #define WIDTH 320
 #define HEIGHT 200
 
-unsigned char render_pixel(int x, int y);
+void render_image(unsigned char *screen, unsigned char *image, int width, int height, int x, int y);
 
 void main() {
   unsigned char *screen = (unsigned char *) 0xA0000;
 
-  for (int y = 0; y < HEIGHT; y++) {
-    for (int x = 0; x < WIDTH; x++) {
-      screen[y*WIDTH + x] = render_pixel(x, y);
-    }
-  }
+  unsigned char image[] = {
+    0x0F, 0x0F, 0x0F, 0x0F,
+    0x0F, 0x00, 0x00, 0x0F,
+    0x0F, 0x00, 0x00, 0x0F,
+    0x0F, 0x0F, 0x0F, 0x0F,
+  };
+
+  render_image(screen, image, 4, 4, 25, 25);
 }
 
-unsigned char render_pixel(int x, int y) {
-  int u = x - WIDTH/2;
-  int v = y - HEIGHT/2;
-
-  int radius = 20;
-
-  if (u*u + v*v < radius*radius) {
-    return 0x0F;
-  }
-  else {
-    return 0x00;
+void render_image(unsigned char *screen, unsigned char *image, int width, int height, int x, int y) {
+  for (int iy = 0; iy < height; iy++) {
+    for (int ix = 0; ix < width; ix++) {
+      screen[(y+iy)*WIDTH + (x+ix)] = image[iy*width + ix];
+    }
   }
 }
