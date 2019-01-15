@@ -13,7 +13,11 @@ void main() {
     0x0F, 0x0F, 0x0F, 0x0F,
   };
 
-  render_image(screen, image, 4, 4, -2, -2);
+  for (int y = 0; y < 10; y++) {
+    for (int x = 0; x < 10; x++) {
+      render_image(screen, image, 4, 4, -2 + 6*x, -2 + 6*y);
+    }
+  }
 }
 
 void render_image(unsigned char *screen, unsigned char *image, int width, int height, int x, int y) {
