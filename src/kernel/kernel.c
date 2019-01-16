@@ -7,16 +7,9 @@ unsigned char rgb_to_vga(int r, int b, int g);
 void main() {
   unsigned char *screen = (unsigned char *) 0xA0000;
 
-  unsigned char image[] = {
-    0xE0, 0xE0, 0xE0, 0xE0,
-    0xE0, 0x00, 0x00, 0xE0,
-    0xE0, 0x00, 0x00, 0xE0,
-    0xE0, 0xE0, 0xE0, 0xE0,
-  };
-
   for (int y = 0; y < HEIGHT; y++) {
     for (int x = 0; x < WIDTH; x++) {
-      screen[y*WIDTH + x] = rgb_to_vga(x, y, 0);
+      screen[y*WIDTH + x] = rgb_to_vga(x, y, x);
     }
   }
 }
