@@ -4,13 +4,43 @@
 void render_image(unsigned char *screen, unsigned char *image, int width, int height, int x, int y);
 unsigned char rgb_to_vga(int r, int b, int g);
 
+unsigned char font[] = {
+
+  // 1
+  0, 1, 1, 0,
+  0, 0, 1, 0,
+  0, 0, 1, 0,
+  0, 1, 1, 1
+
+
+};
+
 void main() {
   unsigned char *screen = (unsigned char *) 0xA0000;
 
-  for (int y = 0; y < HEIGHT; y++) {
-    for (int x = 0; x < WIDTH; x++) {
-      screen[y*WIDTH + x] = rgb_to_vga(x, y, x);
+  int frame = 0;
+
+  while (1) {
+    for (int y = 0; y < HEIGHT; y++) {
+      for (int x = 0; x < WIDTH; x++) {
+
+        // TODO do dithering
+        /*int oldpixel = screen[y*WIDTH + x];
+        unsigned char newpixel = rgb_to_vga(x, y, x);
+        if (x == 0 || y == 0 || x == WIDTH-1 || y == HEIGHT-1) {
+          screen[y*WIDTH + x] = newpixel;
+        }
+        pixel[x][y]  := newpixel
+        quant_error  := oldpixel - newpixel
+        pixel[x + 1][y    ] := pixel[x + 1][y    ] + quant_error * 7 / 16
+        pixel[x - 1][y + 1] := pixel[x - 1][y + 1] + quant_error * 3 / 16
+        pixel[x    ][y + 1] := pixel[x    ][y + 1] + quant_error * 5 / 16
+        pixel[x + 1][y + 1] := pixel[x + 1][y + 1] + quant_error * 1 / 16*/
+
+        screen[y*WIDTH + x] = rgb_to_vga(x, y, frame % 25);
+      }
     }
+    frame++;
   }
 }
 
@@ -30,7 +60,7 @@ int VGA_TO_RGB[] = {
 	0xFF5555,
 	0xFF55FF,
 	0xFFFF55,
-	0xFFFFFF,
+	0xFFFFFF/*,
 	0x000000,
 	0x101010,
 	0x202020,
@@ -270,7 +300,7 @@ int VGA_TO_RGB[] = {
 	0x000000,
 	0x000000,
 	0x000000,
-	0x000000
+	0x000000*/
 };
 
 int color_distance(int r, int g, int b, int hexColor) {
@@ -288,7 +318,7 @@ int color_distance(int r, int g, int b, int hexColor) {
 unsigned char rgb_to_vga(int r, int b, int g) {
   int closestMatchScore = 2147483647;
   int closestMatchIndex = -1;
-  for (int i = 0; i < 256; i++) {
+  for (int i = 0; i < 16; i++) {
     int hexColor = VGA_TO_RGB[i];
     int score = color_distance(r, g, b, hexColor);
     if (score < closestMatchScore) {
