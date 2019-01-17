@@ -2,6 +2,7 @@
 #define HEIGHT 200
 
 void render_image(unsigned char *screen, unsigned char *image, int width, int height, int x, int y);
+void render_1bit_image(unsigned char *screen, unsigned char *image, int width, int height, int x, int y, unsigned char color);
 unsigned char rgb_to_vga(int r, int b, int g);
 
 unsigned char font[] = {
@@ -21,25 +22,10 @@ void main() {
   int frame = 0;
 
   while (1) {
-    for (int y = 0; y < HEIGHT; y++) {
-      for (int x = 0; x < WIDTH; x++) {
 
-        // TODO do dithering
-        /*int oldpixel = screen[y*WIDTH + x];
-        unsigned char newpixel = rgb_to_vga(x, y, x);
-        if (x == 0 || y == 0 || x == WIDTH-1 || y == HEIGHT-1) {
-          screen[y*WIDTH + x] = newpixel;
-        }
-        pixel[x][y]  := newpixel
-        quant_error  := oldpixel - newpixel
-        pixel[x + 1][y    ] := pixel[x + 1][y    ] + quant_error * 7 / 16
-        pixel[x - 1][y + 1] := pixel[x - 1][y + 1] + quant_error * 3 / 16
-        pixel[x    ][y + 1] := pixel[x    ][y + 1] + quant_error * 5 / 16
-        pixel[x + 1][y + 1] := pixel[x + 1][y + 1] + quant_error * 1 / 16*/
+    int charIndex = 0;
+    render_1bit_image(screen, &font[16*charIndex], 4, 4, 25, 25, 0x0F);
 
-        screen[y*WIDTH + x] = rgb_to_vga(x, y, frame % 25);
-      }
-    }
     frame++;
   }
 }
@@ -332,6 +318,18 @@ unsigned char rgb_to_vga(int r, int b, int g) {
   }
   else {
     return 0x00;
+  }
+}
+
+void render_1bit_image(unsigned char *screen, unsigned char *image, int width, int height, int x, int y, unsigned char color) {
+  for (int iy = 0; iy < height; iy++) { // iy = iterator y
+    for (int ix = 0; ix < width; ix++) { // ix = iterator x
+      int sx = x+ix; // sx = screen x
+      int sy = y+iy; // sy = screen y
+      if (0 <= sx && sx < WIDTH && 0 <= sy && sy < HEIGHT) {
+        screen[sy*WIDTH + sx] = ((image[iy*width + ix] == 1) ? color : 0x05); // FIXME why is this never equal to 1 ?
+      }
+    }
   }
 }
 

@@ -2,10 +2,11 @@ NASM=/usr/local/bin/nasm
 CC=gcc
 OBJCOPY=objcopy
 
-TARGET=husk.iso
+TARGET=husk.raw
 
 $(TARGET) : src/bootloader/bootloader.bin src/kernel/kernel.bin
 	cat src/bootloader/bootloader.bin src/kernel/kernel.bin > $(TARGET)
+	dd if=/dev/zero bs=1K count=512 >> $(TARGET)
 
 run: $(TARGET)
 	qemu-system-i386 $(TARGET)

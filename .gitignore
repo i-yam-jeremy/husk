@@ -1,5 +1,4 @@
-*.dmg
-*.iso
+*.raw
 *.bin
 *.DS_Store
 *.swp
