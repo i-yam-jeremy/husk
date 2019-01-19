@@ -82,9 +82,8 @@ void kernel_main() {
 
 
   while (1) {
-  //  port_byte_out(0x61, 1 << 1);
-    unsigned char b;// = port_byte_in(0x60);// | port_byte_in(0x61) | port_byte_in(0x62) | port_byte_in(0x63) | port_byte_in(0x64);
-    b = 9;
+    port_byte_out(0x61, 1 << 1);
+    unsigned char b = port_byte_in(0x60);// | port_byte_in(0x61) | port_byte_in(0x62) | port_byte_in(0x63) | port_byte_in(0x64);
 
     if (1 <= b && b <= 10) {
       render_1bit_image(screen, &(font[20*(b-1)]), 4, 5, 25, 25, 0x0F);
