@@ -22,7 +22,10 @@ KERNEL_OFFSET  equ 0x1000   ; This is the  memory  offset  to which  we will  lo
 [bits  16]
 ; switch to BIOS VGA video mode
 switch_to_bios_vga:
-  mov ax, 0x13
+  ;;mov ah, 0x4F
+  ;;mov al, 0x0100 ;; TODO figure out VESA function code to enable VESA instead of VGA (which is mov ax, 0x13). Because VESA has larger screen and more color options
+  mov ax, 0x4F02
+  mov bx, 0x4118
   int 0x10
   ret
 

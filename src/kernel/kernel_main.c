@@ -80,11 +80,9 @@ unsigned char font[] = {
 void kernel_main() {
   unsigned char *screen = (unsigned char *) 0xA0000;
 
-
   while (1) {
     port_byte_out(0x61, 1 << 1);
-    unsigned char b = port_byte_in(0x60);// | port_byte_in(0x61) | port_byte_in(0x62) | port_byte_in(0x63) | port_byte_in(0x64);
-
+    unsigned char b = port_byte_in(0x60);
     if (1 <= b && b <= 10) {
       render_1bit_image(screen, &(font[20*(b-1)]), 4, 5, 25, 25, 0x0F);
     }
