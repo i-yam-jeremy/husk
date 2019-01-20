@@ -8,7 +8,7 @@ $(TARGET) : src/bootloader/bootloader.bin src/kernel/kernel.bin
 	cat src/bootloader/bootloader.bin src/kernel/kernel.bin > $(TARGET)
 
 run: $(TARGET)
-	qemu-system-i386 $(TARGET)
+	qemu-system-i386 -drive format=raw,file=$(TARGET)
 
 src/kernel/kernel.bin: src/kernel/*.c
 		$(CC) -ffreestanding -m32 -c -o src/kernel/kernel.o src/kernel/kernel.c

@@ -80,28 +80,14 @@ unsigned char font[] = {
 void kernel_main() {
   unsigned char *screen = (unsigned char *) 0xA0000;
 
-  unsigned int *vesa_framebuffer_addr = (unsigned int *) 0x9000;
+  unsigned int *vesa_framebuffer_addr = (unsigned int *) 0x90000;
 
   unsigned int vesa_framebuffer = *vesa_framebuffer_addr;
 
-  while (1) {
-    for (int i = 0; i < 16; i++) {
-      int n = vesa_framebuffer % 10;
-      vesa_framebuffer /= 10;
-      render_1bit_image(screen, &(font[20*n]), 4, 5, 4+4*i, 25, 0x0F);
-    }
-    /*port_byte_out(0x61, 1 << 1);
-    unsigned char b = port_byte_in(0x60);
-    if (1 <= b && b <= 10) {
-      render_1bit_image(screen, &(font[20*(b-1)]), 4, 5, 25, 25, 0x0F);
-    }
-    else {*/
-      /*for (int y = 0; y < HEIGHT; y++) {
-        for (int x = 0; x < WIDTH; x++) {
-          screen[y*WIDTH + x] = 0x0F;
-        }
-      }*/
-    //}
+  for (int i = 0; i < 16; i++) {
+    int n = vesa_framebuffer % 10;
+    vesa_framebuffer /= 10;
+    render_1bit_image(screen, &(font[20*n]), 4, 5, 79-5*i, 25, 0x0F);
   }
 }
 

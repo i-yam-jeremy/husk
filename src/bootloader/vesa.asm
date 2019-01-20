@@ -17,16 +17,20 @@ get_vesa_framebuffer_location:
   int 0x10
   pop es
 
+  mov di, 0x0000
+  mov es, di
   mov di, vbe_mode_info_structure
   mov ax, [di]
   mov di, 0x9000
-  mov [di], ax
+  mov es, di
+  mov di, 0x0000
+  mov [es:di], ax
 
-  mov di, vbe_mode_info_structure
-  add di, 2
-  mov ax, [di]
-  mov di, 0x9002
-  mov [di], ax
+  ;;mov di, vbe_mode_info_structure
+  ;;add di, 2
+  ;;mov ax, [di]
+  ;;mov di, 0x8002
+  ;;mov [di], ax
 
   ret
 
