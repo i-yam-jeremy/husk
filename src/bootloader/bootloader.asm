@@ -16,23 +16,20 @@ KERNEL_OFFSET  equ 0x1000   ; This is the  memory  offset  to which  we will  lo
 ; Include  our useful , hard -earned  routines
 %include "src/bootloader/disk_load.asm"
 %include "src/bootloader/gdt.asm"
-%include "src/bootloader/print_string_pm.asm"
 %include "src/bootloader/switch_to_pm.asm"
+%include "src/bootloader/vesa.asm"
 
 [bits  16]
 ; switch to BIOS VGA video mode
 switch_to_bios_vga:
-  ;;mov ah, 0x4F
-  ;;mov al, 0x0100 ;; TODO figure out VESA function code to enable VESA instead of VGA (which is mov ax, 0x13). Because VESA has larger screen and more color options
-  mov ax, 0x4F02
-  mov bx, 0x4118
+  call get_vesa_framebuffer_location
+  mov ax, 0x13
   int 0x10
+  ; call set_vesa_mode
   ret
 
 ; load_kernel
 load_kernel:
-  ;mov bx, MSG_LOAD_KERNEL    ; Print a message  to say we are  loading  the  kernel
-  ;call  print_string
   mov bx, KERNEL_OFFSET      ; Set -up  parameters  for  our  disk_load  routine , so
   mov dh, 32                   ; that we load  the sectors (excluding
   mov dl, [BOOT_DRIVE]       ; the  boot  sector) from  the  boot  disk (i.e.  our
@@ -42,8 +39,6 @@ load_kernel:
 [bits  32]
 ; This is where we  arrive  after  switching  to and  initialising  protected  mode.
 BEGIN_PM:
-  mov ebx , MSG_PROT_MODE ; Use  our 32-bit  print  routine  to
-  call  print_string_pm    ; announce  we are in  protected  mode
   call  KERNEL_OFFSET      ; Now  jump to the  address  of our  loaded
   ; kernel  code , assume  the  brace  position ,
   ; and  cross  your  fingers.  Here we go!
@@ -51,9 +46,6 @@ BEGIN_PM:
 
 ; Global  variables
 BOOT_DRIVE        db 0
-MSG_REAL_MODE    db "Started  in 16-bit  Real  Mode", 0
-MSG_PROT_MODE    db "Successfully  landed  in 32-bit  Protected  Mode", 0
-MSG_LOAD_KERNEL  db "Loading  kernel  into  memory.", 0
 
 ; Bootsector  padding
 times  510-($-$$) db 0
