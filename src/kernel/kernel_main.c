@@ -80,7 +80,7 @@ unsigned char font[] = {
 void kernel_main() {
   unsigned char *screen = (unsigned char *) 0xA0000;
 
-  unsigned int *vesa_framebuffer_addr = (unsigned int *) 0x90000;
+  unsigned int *vesa_framebuffer_addr = (unsigned int *) 0x1000;
 
   unsigned int vesa_framebuffer = *vesa_framebuffer_addr;
 

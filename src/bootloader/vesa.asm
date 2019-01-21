@@ -8,6 +8,18 @@ vbe_mode_info_structure:
   .post_data resb 256-44
 
 
+print_hex_num: ;; num in bx
+  push bx
+  and bl, 0xF
+  mov al, bl
+  add al, 0x30
+  int 0x10
+  pop bx
+  shr bx, 4
+  jne print_hex_num
+  ret
+
+
 get_vesa_framebuffer_location:
   push es
   mov ax, 0x4F01
@@ -20,8 +32,9 @@ get_vesa_framebuffer_location:
   mov di, 0x0000
   mov es, di
   mov di, vbe_mode_info_structure
+  mov di, 102
   mov ax, [di]
-  mov di, 0x9000
+  mov di, 0x4000
   mov es, di
   mov di, 0x0000
   mov [es:di], ax
@@ -34,8 +47,8 @@ get_vesa_framebuffer_location:
 
   ret
 
-set_vesa_mode:
-  mov ax, 0x4F02
-  mov bx, 0x4118
-  int 0x10
-  ret
+;;set_vesa_mode:
+;;  mov ax, 0x4F02
+;;  mov bx, 0x4118
+;;  int 0x10
+;;  ret

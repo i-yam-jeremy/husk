@@ -22,10 +22,5 @@ disk_load:
 disk_error :
   mov ah, 0x0e
   mov al, 0x21
-  int 0x21
-  ;mov bx, DISK_ERROR_MSG
-  ;call  print_string
+  int 0x10
   jmp $
-
-; Variables
-DISK_ERROR_MSG   db "Disk  read  error!", 0

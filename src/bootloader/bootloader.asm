@@ -6,9 +6,14 @@ KERNEL_OFFSET  equ 0x1000   ; This is the  memory  offset  to which  we will  lo
   ; best to  remember  this  for  later.
   mov bp, 0x9000         ; Set -up the  stack.
   mov sp, bp
+
+  mov ah, 0x0e
+  mov bx, 0x12
+  call print_hex_num
+
   call switch_to_bios_vga
-  call  load_kernel       ; Load  our  kernel
-  call  switch_to_pm      ; Switch  to  protected  mode , from  which
+  ;;call  load_kernel       ; Load  our  kernel
+  ;;call  switch_to_pm      ; Switch  to  protected  mode , from  which
   ; we will  not  return
 
   jmp $
@@ -23,9 +28,13 @@ KERNEL_OFFSET  equ 0x1000   ; This is the  memory  offset  to which  we will  lo
 ; switch to BIOS VGA video mode
 switch_to_bios_vga:
   call get_vesa_framebuffer_location
-  mov ax, 0x13
-  int 0x10
-  ; call set_vesa_mode
+  ;;mov ax, 0x13
+  ;;int 0x10
+  ;;call set_vesa_mode
+
+  ;;mov ax, 0x4F02
+  ;;mov bx, 0x4118
+  ;;int 0x10
   ret
 
 ; load_kernel
