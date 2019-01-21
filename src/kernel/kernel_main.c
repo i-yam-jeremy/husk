@@ -77,6 +77,16 @@ unsigned char font[] = {
   0, 1, 1, 0
 };
 
+int abs(int n) {
+  return (n >= 0) ? n : -n;
+}
+
+// frequency is 1/frequency
+int wave(int frequency, int amplitude, int t) {
+  int loc = (t % frequency) - frequency/2;
+  return abs(2*amplitude/frequency*loc);
+}
+
 void kernel_main() {
   unsigned char *screen = (unsigned char *) 0xFD000000;
 
@@ -85,9 +95,9 @@ void kernel_main() {
     for (int y = 0; y < 768; y++) {
       for (int x = 0; x < 1024; x++) {
         int i = 3*(y*1024 + x);
-        screen[i+2] = frame % 256; // red
-        screen[i+1] = 0x00; // green
-        screen[i+0] = 0x00; // blue
+        screen[i+2] = 0;//frame % 256; // red
+        screen[i+1] = wave(25, 255, x);//x % 255; // green
+        screen[i+0] = 0;//y % 255; // blue
       }
     }
     frame++;
