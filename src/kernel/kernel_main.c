@@ -87,17 +87,34 @@ int wave(int frequency, int amplitude, int t) {
   return abs(2*amplitude/frequency*loc);
 }
 
+/*int int_sqrt(int n) {
+
+}
+
+int sphere_sdf(int x, int y, int z, int radius) {
+  return int_sqrt(x*x + y*y + z*z) - radius;
+}*/
+
 void kernel_main() {
   unsigned char *screen = (unsigned char *) 0xFD000000;
 
   int frame = 0;
   while (1) {
+    int cx = 100, cy = 100;
+    int radius = 50;
     for (int y = 0; y < 768; y++) {
       for (int x = 0; x < 1024; x++) {
         int i = 3*(y*1024 + x);
-        screen[i+2] = 0;//frame % 256; // red
-        screen[i+1] = wave(25, 255, x);//x % 255; // green
-        screen[i+0] = 0;//y % 255; // blue
+        if ((x-cx)*(x-cx) + (y-cy)*(y-cy) < radius*radius) {
+          screen[i+2] = 0;
+          screen[i+1] = 255;
+          screen[i+0] = 0;
+        }
+        else {
+          screen[i+2] = 0;
+          screen[i+1] = 0;
+          screen[i+0] = 0;
+        }
       }
     }
     frame++;
