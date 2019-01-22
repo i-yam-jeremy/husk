@@ -175,19 +175,23 @@ Intersection Intersection_new(int intersected, Vec3 p) {
   return in;
 }
 
-float sphere_sdf(Vec3 p) {
+float sphere_sdf(Vec3 p, int frame) {
   float radius = 10.5;
-  return Vec3_magnitude(Vec3_sub(p, Vec3_new(0.0, -1.0, 2.0))) - radius;
+  return Vec3_magnitude(Vec3_sub(p, Vec3_new(0.0, -1.0+0.1*frame, 2.0))) - radius;
 }
 
-Intersection march(Vec3 p, Vec3 ray) {
+Intersection march(Vec3 p, Vec3 ray, int frame) {
   float t = 0.0;
 
-  for (int i = 0; i < 64; i++) {
-    float d = sphere_sdf(p);
+  for (int i = 0; i < 16; i++) {
+    float d = sphere_sdf(p, frame);
 
-    if (d < 0.01 && d > -0.01) {
-      return Intersection_new(0, p);
+    if (d < 0.001 && d > -0.001) {
+      return Intersection_new(i, p);
+    }
+
+    if (t > 10.0) { // Back clipping sphere
+      break;
     }
 
     t += d;
@@ -209,22 +213,25 @@ void kernel_main() {
 
   int frame = 0;
   while (1) {
-    for (int y = 0; y < HEIGHT; y++) {
-      for (int x = 0; x < WIDTH; x++) {
+    for (int y = 0; y < HEIGHT; y+=4) {
+      for (int x = 0; x < WIDTH; x+=4) {
         Vec3 uv = Vec3_new(2.0*((float)x - WIDTH/2)/HEIGHT, 2.0*((float)y-HEIGHT/2)/HEIGHT, 0.0);
         Vec3 ray = Vec3_normalize(Vec3_sub(uv, camera));
-        Intersection in = march(camera, ray);
-        if (in.intersected != -1) {
-          int i = 3*(y*WIDTH + x);
-          screen[i+2] = 0xFF;
-          screen[i+1] = 0x00;
-          screen[i+0] = 0x00;
-        }
-        else {
-          int i = 3*(y*WIDTH + x);
-          screen[i+2] = 0x00;
-          screen[i+1] = 0x00;
-          screen[i+0] = 0xFF;
+        Intersection in = march(camera, ray, frame);
+        for (int iy = 0; iy < 4; iy++) {
+          for (int ix = 0; ix < 4; ix++) {
+            int i = 3*((y+iy)*WIDTH + x+ix);
+            if (in.intersected != -1) {
+              screen[i+2] = 0xFF;
+              screen[i+1] = 0x00;
+              screen[i+0] = 0x00;
+            }
+            else {
+              screen[i+2] = 0x00;
+              screen[i+1] = 0x00;
+              screen[i+0] = 0x55;
+            }
+          }
         }
       }
     }
