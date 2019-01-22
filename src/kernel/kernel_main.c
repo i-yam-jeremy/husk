@@ -95,12 +95,38 @@ int sphere_sdf(int x, int y, int z, int radius) {
   return int_sqrt(x*x + y*y + z*z) - radius;
 }*/
 
+void init_fpu() {
+  unsigned int cr4;
+
+  // place CR4 into our variable
+  __asm__ __volatile__("mov %%cr4, %0;" : "=r" (cr4));
+
+  // set the OSFXSR bit
+  cr4 |= 0x200;
+
+  // reload CR4
+  __asm__ __volatile__("mov %0, %%cr4;" : : "r"(cr4));
+
+    // INIT the FPU (FINIT)
+  __asm__ __volatile__("finit;");
+
+  int cw = 0;
+
+  // FLDCW = Load FPU Control Word
+  asm volatile("fldcw %0;    "
+               ::"m"(cw));     // sets the FPU control word to "cw"
+}
+
 void kernel_main() {
+  init_fpu();
+
+  float x = 1.0;
+
   unsigned char *screen = (unsigned char *) 0xFD000000;
 
   int frame = 0;
   while (1) {
-    int cx = 100, cy = 100;
+    int cx = 1024/2 + wave(25, 25, frame), cy = 768/2 + wave(50, 25, frame);
     int radius = 50;
     for (int y = 0; y < 768; y++) {
       for (int x = 0; x < 1024; x++) {
