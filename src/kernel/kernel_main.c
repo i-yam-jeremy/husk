@@ -1,8 +1,5 @@
 #include "port_io.h"
 
-#define WIDTH 320
-#define HEIGHT 200
-
 void render_1bit_image(unsigned char *screen, unsigned char *image, int width, int height, int x, int y, unsigned char color);
 
 unsigned char font[] = {
@@ -117,29 +114,117 @@ void init_fpu() {
                ::"m"(cw));     // sets the FPU control word to "cw"
 }
 
+float sqrt(float x) { // https://stackoverflow.com/questions/5000109/implement-double-sqrtdouble-x-in-c
+  long i;
+   float x2, y;
+   const float threehalfs = 1.5F;
+
+   x2 = x * 0.5F;
+   y  = x;
+   i  = * ( long * ) &y;                     // floating point bit level hacking [sic]
+   i  = 0x5f3759df - ( i >> 1 );             // Newton's approximation
+   y  = * ( float * ) &i;
+   y  = y * ( threehalfs - ( x2 * y * y ) ); // 1st iteration
+   y  = y * ( threehalfs - ( x2 * y * y ) ); // 2nd iteration
+   y  = y * ( threehalfs - ( x2 * y * y ) ); // 3rd iteration
+
+   return 1/y;
+}
+
+typedef struct {
+  float x, y, z;
+} Vec3;
+
+typedef struct {
+  int intersected;
+  Vec3 p;
+} Intersection;
+
+Vec3 Vec3_new(float x, float y, float z) {
+  Vec3 v;
+  v.x = x;
+  v.y = y;
+  v.z = z;
+  return v;
+}
+
+Vec3 Vec3_add(Vec3 v1, Vec3 v2) {
+  return Vec3_new(v1.x+v2.x, v1.y+v2.y, v1.z+v2.z);
+}
+
+Vec3 Vec3_sub(Vec3 v1, Vec3 v2) {
+  return Vec3_new(v1.x-v2.x, v1.y-v2.y, v1.z-v2.z);
+}
+
+Vec3 Vec3_scale(Vec3 v, float s) {
+  return Vec3_new(s*v.x, s*v.y, s*v.z);
+}
+
+float Vec3_magnitude(Vec3 v) {
+  return sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
+}
+
+Vec3 Vec3_normalize(Vec3 v) {
+  return Vec3_scale(v, 1.0/Vec3_magnitude(v));
+}
+
+Intersection Intersection_new(int intersected, Vec3 p) {
+  Intersection in;
+  in.intersected = intersected;
+  in.p = p;
+  return in;
+}
+
+float sphere_sdf(Vec3 p) {
+  float radius = 10.5;
+  return Vec3_magnitude(Vec3_sub(p, Vec3_new(0.0, -1.0, 2.0))) - radius;
+}
+
+Intersection march(Vec3 p, Vec3 ray) {
+  float t = 0.0;
+
+  for (int i = 0; i < 64; i++) {
+    float d = sphere_sdf(p);
+
+    if (d < 0.01 && d > -0.01) {
+      return Intersection_new(0, p);
+    }
+
+    t += d;
+    p = Vec3_add(p, Vec3_scale(ray, t));
+  }
+
+  return Intersection_new(-1, Vec3_new(0, 0, 0));
+}
+
+#define WIDTH 1024
+#define HEIGHT 768
+
 void kernel_main() {
   init_fpu();
 
-  float x = 1.0;
-
   unsigned char *screen = (unsigned char *) 0xFD000000;
+
+  Vec3 camera = Vec3_new(0.0, 0.0, -5.0);
 
   int frame = 0;
   while (1) {
-    int cx = 1024/2 + wave(25, 25, frame), cy = 768/2 + wave(50, 25, frame);
-    int radius = 50;
-    for (int y = 0; y < 768; y++) {
-      for (int x = 0; x < 1024; x++) {
-        int i = 3*(y*1024 + x);
-        if ((x-cx)*(x-cx) + (y-cy)*(y-cy) < radius*radius) {
-          screen[i+2] = 0;
-          screen[i+1] = 255;
-          screen[i+0] = 0;
+    for (int y = 0; y < HEIGHT; y++) {
+      for (int x = 0; x < WIDTH; x++) {
+        Vec3 uv = Vec3_new(2.0*((float)x - WIDTH/2)/HEIGHT, 2.0*((float)y-HEIGHT/2)/HEIGHT, 0.0);
+        Vec3 ray = Vec3_normalize(Vec3_sub(uv, camera));
+        Intersection in = march(camera, ray);
+        if (in.intersected != -1) {
+          int i = 3*(y*WIDTH + x);
+          screen[i+2] = 0xFF;
+          screen[i+1] = 0x00;
+          screen[i+0] = 0x00;
         }
         else {
-          screen[i+2] = 0;
-          screen[i+1] = 0;
-          screen[i+0] = 0;
+          int i = 3*(y*WIDTH + x);
+          screen[i+2] = 0x00;
+          screen[i+1] = 0x00;
+          screen[i+0] = 0xFF;
         }
       }
     }
