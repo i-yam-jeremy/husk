@@ -1,6 +1,8 @@
 *.raw
 *.bin
+*.flp
+*.iso
 *.DS_Store
 *.swp
 *.o
-objconv
+iso/*

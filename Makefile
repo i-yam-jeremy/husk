@@ -20,7 +20,7 @@ $(TARGET_ISO): $(TARGET)
 	#cp src/bootloader/bootloader.bin iso/
 	#mkisofs -r -b bootloader.bin -c husk.flp -o husk.iso -no-emul-boot -boot-load-size 4 -boot-info-table iso/
 	mkisofs -quiet -V 'HUSK' -input-charset iso8859-1 -o husk.iso -b husk.flp iso/
-	dd if=husk.raw of=husk.iso seek=0 count=33 conv=notrunc
+	#dd if=husk.raw of=husk.iso seek=0 count=33 conv=notrunc
 	#mkisofs -V 'HUSK' -input-charset iso8859-1 -o $(TARGET_ISO) -no-emul-boot -boot-load-size 4 -b husk.flp -hide husk.flp iso/
 
 
