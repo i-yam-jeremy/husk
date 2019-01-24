@@ -203,38 +203,48 @@ Intersection march(Vec3 p, Vec3 ray, int frame) {
   return Intersection_new(-1, Vec3_new(0, 0, 0));
 }
 
+void get_vesa_mode_info() {
+  __asm__ ("call get_vesa_mode_info");
+}
+
 #define WIDTH 1024
 #define HEIGHT 768
 
 void kernel_main() {
+  get_vesa_mode_info();
+  //unsigned int ebx;
+  //__asm__ __volatile__("mov %%ebx, %0;" : "=r" (ebx));
+
+
   init_fpu();
 
+  /*
+  QEMU - 0xFD000000
+  VirtualBox - 0xE000000
+  */
   unsigned char *screen = (unsigned char *) 0xFD000000;
 
   Vec3 camera = Vec3_new(0.0, 0.0, -5.0);
 
   int frame = 0;
   while (1) {
-    for (int y = 0; y < HEIGHT; y+=4) {
-      for (int x = 0; x < WIDTH; x+=4) {
-        Vec3 uv = Vec3_new(2.0*((float)x - WIDTH/2)/HEIGHT, 2.0*((float)y-HEIGHT/2)/HEIGHT, 0.0);
+    for (int y = 0; y < HEIGHT; y++) {
+      for (int x = 0; x < WIDTH; x++) {
+        screen[3*(y*WIDTH + x)] = *((unsigned char *) 0x01000000);//(ebx>>16);
+        /*Vec3 uv = Vec3_new(2.0*((float)x - WIDTH/2)/HEIGHT, 2.0*((float)y-HEIGHT/2)/HEIGHT, 0.0);
         Vec3 ray = Vec3_normalize(Vec3_sub(uv, camera));
         Intersection in = march(camera, ray, frame);
-        for (int iy = 0; iy < 4; iy++) {
-          for (int ix = 0; ix < 4; ix++) {
-            int i = 3*((y+iy)*WIDTH + x+ix);
-            if (in.intersected != -1) {
-              screen[i+2] = 0xFF;
-              screen[i+1] = 0x00;
-              screen[i+0] = 0x00;
-            }
-            else {
-              screen[i+2] = 0x00;
-              screen[i+1] = 0x00;
-              screen[i+0] = 0x55;
-            }
-          }
+        int i = 3*(y*WIDTH + x);
+        if (in.intersected != -1) {
+          screen[i+2] = 0xFF;
+          screen[i+1] = 0x00;
+          screen[i+0] = 0x00;
         }
+        else {
+          screen[i+2] = 0x00;
+          screen[i+1] = 0x00;
+          screen[i+0] = 0x55;
+        }*/
       }
     }
     frame++;

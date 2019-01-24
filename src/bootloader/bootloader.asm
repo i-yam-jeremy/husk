@@ -7,23 +7,10 @@ KERNEL_OFFSET  equ 0x1000   ; This is the  memory  offset  to which  we will  lo
   mov bp, 0x9000         ; Set -up the  stack.
   mov sp, bp
 
-  ;;call switch_to_vesa
+  call switch_to_vesa
   call  load_kernel       ; Load  our  kernel
 
-  mov ah, 0x0e
-  mov al, [KERNEL_OFFSET]
-  cmp al, 0
-  je label
-  int 0x10
-
-  jmp $
-
-label:
-  mov ah, 0x0e
-  mov al, 0x21
-  int 0x10
-
-  ;;call  switch_to_pm      ; Switch  to  protected  mode , from  which
+  call  switch_to_pm      ; Switch  to  protected  mode , from  which
   ; we will  not  return
 
   jmp $
@@ -36,9 +23,57 @@ label:
 [bits  16]
 ; switch to VESA video mode
 switch_to_vesa:
+  ;;mov ax, 0x4F02
+  ;;mov bx, 0x4118
+  ;;int 0x10
+  ;;ret
+
+  mov ah, 0x0e
+  mov bx, 0x21
+  ;;mov cx, 4
+  ;;call print_hex_num
+
+  push es
+  mov ax, 0x4F01
+  mov cx, 0x4118
+  ;
+  mov di, vbe_mode_info_structure
+  int 0x10
+  pop es
+
+  mov bx, 0x99
+  mov bx, [vbe_mode_info_structure+40]
+  mov cx, 4
+  call print_hex_num
+  mov cx, 4
+  mov bx, [vbe_mode_info_structure+42]
+  call print_hex_num
+  ;;mov ax, 0x13
+  ;;int 0x10
+  ;;call set_vesa_mode
+
   mov ax, 0x4F02
   mov bx, 0x4118
   int 0x10
+  ret
+
+vbe_mode_info_structure:
+  .pre_data resb 40
+  .framebuffer resb 4
+  .post_data resb 256-44
+
+
+print_hex_num: ;; num in bx
+  mov ah, 0x0e
+  push bx
+  and bl, 0xF
+  mov al, bl
+  add al, 0x30
+  int 0x10
+  pop bx
+  shr bx, 4
+  dec cx
+  jne print_hex_num
   ret
 
 ; load_kernel

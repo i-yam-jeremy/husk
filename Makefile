@@ -20,9 +20,11 @@ $(TARGET_ISO): $(TARGET)
 	#cp src/kernel/kernel.bin iso/
 	mkisofs -quiet -V 'HUSK' -input-charset iso8859-1 -o husk.iso -b husk.flp -hide husk.flp iso/
 
-src/kernel/kernel.bin: src/kernel/*.c
+src/kernel/kernel.bin: src/kernel/*.c src/kernel/vesa.asm
+		$(NASM) -O0 -f macho32 -o src/kernel/vesa.o src/kernel/vesa.asm
 		$(CC) -ffreestanding -m32 -c -o src/kernel/kernel.o src/kernel/kernel.c
-		$(OBJCOPY) -O binary --change-start 0x1000 --pad-to 0x4000 src/kernel/kernel.o src/kernel/kernel.bin
+		ld -r -o src/kernel/full_kernel.o src/kernel/kernel.o src/kernel/vesa.o 
+		$(OBJCOPY) -O binary --change-start 0x1000 --pad-to 0x4000 src/kernel/full_kernel.o src/kernel/kernel.bin
 
 src/bootloader/bootloader.bin: src/bootloader/*.asm
 	$(NASM) -O0 -f bin -o src/bootloader/bootloader.bin src/bootloader/bootloader.asm
