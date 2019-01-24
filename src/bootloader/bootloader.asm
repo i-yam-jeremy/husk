@@ -79,7 +79,7 @@ print_hex_num: ;; num in bx
 ; load_kernel
 load_kernel:
   mov bx, KERNEL_OFFSET      ; Set -up  parameters  for  our  disk_load  routine , so
-  mov dh, 32                   ; that we load  the sectors (excluding
+  mov dh, 38                   ; that we load  the sectors (excluding
   mov dl, [BOOT_DRIVE]       ; the  boot  sector) from  the  boot  disk (i.e.  our
   call  disk_load               ;   kernel  code) to  address  KERNEL_OFFSET
   ret

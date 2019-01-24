@@ -204,7 +204,7 @@ Intersection march(Vec3 p, Vec3 ray, int frame) {
 }
 
 void get_vesa_mode_info() {
-  __asm__ ("call get_vesa_mode_info");
+  __asm__ ("call 0x4000");
 }
 
 #define WIDTH 1024
