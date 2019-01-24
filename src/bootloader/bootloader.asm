@@ -7,10 +7,23 @@ KERNEL_OFFSET  equ 0x1000   ; This is the  memory  offset  to which  we will  lo
   mov bp, 0x9000         ; Set -up the  stack.
   mov sp, bp
 
-
-  call switch_to_vesa
+  ;;call switch_to_vesa
   call  load_kernel       ; Load  our  kernel
-  call  switch_to_pm      ; Switch  to  protected  mode , from  which
+
+  mov ah, 0x0e
+  mov al, [KERNEL_OFFSET]
+  cmp al, 0
+  je label
+  int 0x10
+
+  jmp $
+
+label:
+  mov ah, 0x0e
+  mov al, 0x21
+  int 0x10
+
+  ;;call  switch_to_pm      ; Switch  to  protected  mode , from  which
   ; we will  not  return
 
   jmp $
@@ -50,3 +63,5 @@ BOOT_DRIVE        db 0
 ; Bootsector  padding
 times  510-($-$$) db 0
 dw 0xaa55
+
+times  1536-($-$$) db 0

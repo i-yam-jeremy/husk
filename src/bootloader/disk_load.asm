@@ -6,9 +6,9 @@ disk_load:
 
   mov ah, 0x02     ; BIOS  read  sector  function
   mov al, dh       ; Read DH  sectors
-  mov ch, 0x00     ; Select  cylinder 0
-  mov dh, 0x00     ; Select  head 0
-  mov cl, 0x02     ; Start  reading  from  second  sector (i.e.
+  mov ch,  0     ; Select  cylinder 0
+  mov dh,   0     ; Select  head 0
+  mov cl, 0x04     ; Start  reading  from  second  sector (i.e.
   ; after  the  boot  sector)
 
   int 0x13          ; BIOS  interrupt
@@ -21,6 +21,6 @@ disk_load:
 
 disk_error :
   mov ah, 0x0e
-  mov al, 0x21
+  mov al, 0x22
   int 0x10
   jmp $

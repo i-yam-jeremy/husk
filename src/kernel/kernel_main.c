@@ -74,6 +74,8 @@ unsigned char font[] = {
   0, 1, 1, 0
 };
 
+char *a = "Hello world!";
+
 int abs(int n) {
   return (n >= 0) ? n : -n;
 }
