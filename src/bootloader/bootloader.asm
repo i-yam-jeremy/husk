@@ -7,6 +7,11 @@ KERNEL_OFFSET  equ 0x1000   ; This is the  memory  offset  to which  we will  lo
   mov bp, 0x9000         ; Set -up the  stack.
   mov sp, bp
 
+  mov ah, 0x0e
+  mov al, 0x21
+  int 0x10
+  jmp $
+
   call switch_to_vesa
   call  load_kernel       ; Load  our  kernel
 
@@ -23,7 +28,7 @@ KERNEL_OFFSET  equ 0x1000   ; This is the  memory  offset  to which  we will  lo
 [bits  16]
 ; switch to VESA video mode
 switch_to_vesa:
-  ;;mov ax, 0x4F02
+  ;mov ax, 0x4F02
   ;;mov bx, 0x4118
   ;;int 0x10
   ;;ret
