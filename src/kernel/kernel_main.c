@@ -221,8 +221,9 @@ void kernel_main() {
   /*
   QEMU - 0xFD000000
   VirtualBox - 0xE000000
+  Bochs - 0xE0000000
   */
-  unsigned char *screen = (unsigned char *) 0xFD000000;
+  unsigned char *screen = (unsigned char *) 0xE0000000;
 
   Vec3 camera = Vec3_new(0.0, 0.0, -5.0);
 
@@ -230,8 +231,9 @@ void kernel_main() {
   while (1) {
     for (int y = 0; y < HEIGHT; y++) {
       for (int x = 0; x < WIDTH; x++) {
+        screen[4*(y*WIDTH + x)] = 0xFF;
         //screen[3*(y*WIDTH + x)] = *((unsigned char *) 0x01000000);//(ebx>>16);
-        Vec3 uv = Vec3_new(2.0*((float)x - WIDTH/2)/HEIGHT, 2.0*((float)y-HEIGHT/2)/HEIGHT, 0.0);
+        /*Vec3 uv = Vec3_new(2.0*((float)x - WIDTH/2)/HEIGHT, 2.0*((float)y-HEIGHT/2)/HEIGHT, 0.0);
         Vec3 ray = Vec3_normalize(Vec3_sub(uv, camera));
         Intersection in = march(camera, ray, frame);
         int i = 3*(y*WIDTH + x);
@@ -244,7 +246,7 @@ void kernel_main() {
           screen[i+2] = 0x00;
           screen[i+1] = 0x00;
           screen[i+0] = 0x55;
-        }
+        }*/
       }
     }
     frame++;

@@ -5,11 +5,27 @@ OBJCOPY=objcopy
 TARGET=husk.raw
 TARGET_ISO=husk.iso
 
+VBOX_VM_NAME=Husk
+VBOX_VM_HD=husk.vdi
+
 $(TARGET) : src/bootloader/bootloader.bin src/kernel/kernel.bin
 	cat src/bootloader/bootloader.bin src/kernel/kernel.bin > $(TARGET)
 
-run: $(TARGET)
-	qemu-system-i386 -drive format=raw,file=$(TARGET)
+run: $(TARGET_ISO)
+	VBoxManage unregistervm $(VBOX_VM_NAME) --delete
+	rm -f $(VBOX_VM_HD)
+	#VBoxManage createhd --filename $(VBOX_VM_HD) --size 2
+	VBoxManage createvm --name $(VBOX_VM_NAME) --ostype "Other" --register
+	VBoxManage storagectl $(VBOX_VM_NAME) --name "SATA Controller" --add sata --controller IntelAHCI
+	#VBoxManage storageattach $(VBOX_VM_NAME) --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium $(VBOX_VM_HD)
+	VBoxManage storagectl $(VBOX_VM_NAME) --name "IDE Controller" --add ide
+	VBoxManage storageattach $(VBOX_VM_NAME) --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium $(TARGET_ISO)
+	VBoxManage modifyvm $(VBOX_VM_NAME) --ioapic on
+	VBoxManage modifyvm $(VBOX_VM_NAME) --boot1 dvd --boot2 disk --boot3 none --boot4 none
+	VBoxManage modifyvm $(VBOX_VM_NAME) --memory 1024 --vram 128
+	#VBoxManage modifyvm $(VBOX_VM_NAME) --nic1 bridged --bridgeadapter1 e1000g0
+	VBoxManage startvm $(VBOX_VM_NAME) --type gui
+	#qemu-system-i386 -drive format=raw,file=$(TARGET)
 
 iso: $(TARGET_ISO)
 $(TARGET_ISO): $(TARGET)
